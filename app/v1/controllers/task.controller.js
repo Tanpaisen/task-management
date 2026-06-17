@@ -68,7 +68,7 @@ module.exports.detail = async (req, res) => {
     res.json(task)
 }
 
-//[GET] /api/v1/tasks/change-status/:id
+//[PATCH] /api/v1/tasks/change-status/:id
 module.exports.changeStatus = async (req, res) => {
     try {
         const id = req.params.id;
@@ -120,6 +120,25 @@ module.exports.changeMulti = async (req, res) => {
         res.json({
             code: 404,
             message: "Cập nhật thất bại"
+        })
+    }
+
+}
+
+//[POST] /api/v1/tasks/create
+module.exports.create = async (req, res) => {
+    try {
+        const task = new Task(req.body);
+        task.save();
+
+        res.json({
+            code: 200,
+            message: "Cập nhật trạng thái thành công",
+        })
+    } catch {
+        res.json({
+            code: 404,
+            message: "Cập nhật trạng thái thất bại"
         })
     }
 
