@@ -13,11 +13,11 @@ module.exports.index = async (req, res) => {
 
     //pagination
     const objectTask = {
-        currentPage : 1,
+        currentPage: 1,
         limitPage: req.query.limit || 2,
     }
 
-    const countTask = await Task.countDocuments({deleted: false})
+    const countTask = await Task.countDocuments({ deleted: false })
 
     paginationHelper(
         req.query,
@@ -28,7 +28,7 @@ module.exports.index = async (req, res) => {
 
 
     //Lọc theo trạng thái
-    if ( req.query.status ) {
+    if (req.query.status) {
         find.status = req.query.status
     }
     //End lọc theo trạng thái
@@ -66,4 +66,29 @@ module.exports.detail = async (req, res) => {
         deleted: false,
     }).select('id title status content timeStart timeFinish')
     res.json(task)
+}
+
+//[GET] /api/v1/tasks/change-status/:id
+module.exports.changeStatus = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const status = req.body.status;
+
+        await Task.updateOne({
+            _id: id,
+        }, {
+            status: status
+        })
+
+        res.json({
+            code: 200,
+            message: "Cập nhật trạng thái thành công",
+        })
+    } catch {
+        res.json({
+            code: 404,
+            message: "Cập nhật trạng thái thất bại"
+        })
+    }
+
 }
