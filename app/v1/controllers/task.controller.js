@@ -166,3 +166,26 @@ module.exports.edit = async (req, res) => {
     }
 
 }
+
+//[DELETE] /api/v1/tasks/deleteOne/:id
+module.exports.deleteOne = async (req, res) => {
+    try {
+        const id = req.params.id;
+        await Task.updateOne({
+            _id: id
+        }, {
+            deleted: true
+        })
+
+        res.json({
+            code: 200,
+            message: "Xóa 1 công việc thành công",
+        })
+    } catch {
+        res.json({
+            code: 404,
+            message: "Cập nhật trạng thái thất bại"
+        })
+    }
+
+}
