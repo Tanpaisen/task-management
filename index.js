@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
+const cookieParser = require('cookie-parser')
 const cors = require('cors');
 
 dotenv.config();
@@ -13,6 +14,8 @@ const databaseConfig = require('./config/database')
 databaseConfig.connect();
 
 const port = process.env.PORT
+
+app.use(cookieParser('tanpaisen'));
 
 //CORS
 app.use(cors());
