@@ -196,3 +196,19 @@ module.exports.resetPassword = async (req, res) => {
         message: "Đổi mật khẩu thành công"
     })
 }
+
+//[GET] /api/v1/users/detail
+module.exports.detail = async (req, res) => {
+    const token = req.cookies.token;
+
+    const userInfo = await User.findOne({
+        tokenUser: token,
+        deleted: false
+    }).select('-password -tokenUser')
+
+    res.json({
+        code: 200,
+        userInfo: userInfo
+    })
+
+}
