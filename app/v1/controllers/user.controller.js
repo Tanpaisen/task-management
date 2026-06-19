@@ -128,5 +128,38 @@ module.exports.forgotPassword = async (req, res) => {
 
     res.json({
         code: 200,
+        email: email,
+        otp: otp
+    })
+}
+
+//[POST] /api/v1/users/password/otp
+module.exports.otpPassword = async (req, res) => {
+    const email = req.body.email
+    const otp = req.body.otp
+
+
+    const forgotPassword = await ForgotPassword.findOne({
+        otp: otp,
+        email: email,
+    })
+
+    if (!forgotPassword) {
+        res.json({
+            code: 400,
+            message: "Otp không chính xác!"
+        })
+        return;
+    }
+
+    const user = await User.findOne({
+        email: email,
+        deleted: false
+    })
+    const token = user.tokenUser;
+
+    res.json({
+        code: 200,
+        token: token
     })
 }
