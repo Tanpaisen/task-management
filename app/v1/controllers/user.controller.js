@@ -158,8 +158,41 @@ module.exports.otpPassword = async (req, res) => {
     })
     const token = user.tokenUser;
 
+    res.cookie('token', token)
+
     res.json({
         code: 200,
         token: token
+    })
+}
+
+//[POST] /api/v1/users/password/reset
+module.exports.resetPassword = async (req, res) => {
+    const token = req.body.token;
+    const password = md5(req.body.password)
+
+    const user = await User.findOne({
+        tokenUser: token,
+        deleted: false
+    })
+
+    if (password === user.password) {
+        res.json({
+            code: 400,
+            message: "Mật khẩu mới không được trùng mật khẩu cũ"
+        })
+        return;
+    }
+
+    await User.updateOne({
+        tokenUser: token,
+        deleted: false
+    },{
+        password: password
+    })
+
+    res.json({
+        code: 200,
+        message: "Đổi mật khẩu thành công"
     })
 }
