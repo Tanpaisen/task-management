@@ -40,9 +40,47 @@ module.exports.register = async (req, res) => {
 
     const token = user.tokenUser;
 
+    //Nếu fe k gửi token
+    res.cookie('token', token)
+
     res.json({
         code: 200,
         token: token,
         message: "Tạo tài khoản thành công!"
+    })
+}
+
+//[POST] /api/v1/users/login
+module.exports.login = async (req, res) => {
+    const email = req.body.email;
+    const password = md5(req.body.password);
+
+    const user = await User.findOne({
+        email: email,
+        deleted: false,
+    })
+
+    if (!user) {
+        res.json({
+            code: 400,
+            message: "Email không tồn tại!"
+        })
+        return;
+    }
+
+    if (password !== user.password) {
+        res.json({
+            code: 400,
+            message: "Sai mật khẩu!"
+        })
+        return;
+    }
+
+    res.cookie('token', user.tokenUser)
+
+    res.json({
+        code: 200,
+        token: user.tokenUser,
+        message: "Đăng nhập thành công!"
     })
 }
