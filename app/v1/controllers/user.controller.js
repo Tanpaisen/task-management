@@ -1,6 +1,11 @@
 const User = require('../model/users.model')
+const ForgotPassword = require('../model/forgot-password.model')
 
 const md5 = require('md5')
+
+const generateHelper = require('../../../helper/generate')
+const sendMailHelper = require('../../../helper/sendMail')
+
 
 //[POST] /api/v1/users/register
 module.exports.register = async (req, res) => {
@@ -82,5 +87,46 @@ module.exports.login = async (req, res) => {
         code: 200,
         token: user.tokenUser,
         message: "Đăng nhập thành công!"
+    })
+}
+
+//[POST] /api/v1/users/password/forgot
+module.exports.forgotPassword = async (req, res) => {
+    const email = req.body.email;
+
+    const user = await User.findOne({
+        email: email,
+        deleted: false
+    })
+
+    if (!user) {
+        res.json({
+            code: 400,
+            message: "email không chính xác!"
+        })
+        return;
+    }
+
+    const expireTo = 5
+
+    const otp = generateHelper.generateRandomNumber(6)
+    const objectForgot = {
+        email: email,
+        otp: otp,
+        expireAt: Date.now() + expireTo * 60,
+    }
+    const forgotPassword = new ForgotPassword(objectForgot)
+    forgotPassword.save()
+
+
+    //Neu lay duoc ma thi gui qua otp qua gmail
+    const subject = "Mã OTP xác nhận mật khẩu"
+    const html = `
+           Mã OTP xác nhận của bạn là: <b> ${otp} </b>. Mã xác nhận có hiệu lực 3 phút. Vui lòng không chia sẻ mã với bất kỳ ai!
+        `
+    sendMailHelper.sendMail(email, subject, html)
+
+    res.json({
+        code: 200,
     })
 }
