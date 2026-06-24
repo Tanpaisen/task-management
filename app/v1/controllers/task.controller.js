@@ -139,6 +139,7 @@ module.exports.changeMulti = async (req, res) => {
 //[POST] /api/v1/tasks/create
 module.exports.create = async (req, res) => {
     try {
+        req.body.taskParentID = req.user.id
         const task = new Task(req.body);
         task.save();
 
