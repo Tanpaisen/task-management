@@ -13,6 +13,7 @@ module.exports.register = async (req, res) => {
     const phone = req.body.phone;
 
     req.body.password = md5(req.body.password);
+    req.body.tokenUser = generateHelper.generateRandomString(20)
 
     const existEmail = await User.findOne({
         email: email,
@@ -23,19 +24,6 @@ module.exports.register = async (req, res) => {
         res.json({
             code: 400,
             message: "Email đã tồn tại!"
-        })
-        return;
-    }
-
-    const existPhone = await User.findOne({
-        phone: phone,
-        deleted: false
-    })
-
-    if (existPhone) {
-        res.json({
-            code: 400,
-            message: "Số điện thoại đã tồn tại!"
         })
         return;
     }
@@ -113,7 +101,7 @@ module.exports.forgotPassword = async (req, res) => {
     const objectForgot = {
         email: email,
         otp: otp,
-        expireAt: Date.now() + expireTo * 60,
+        expireAt: Date.now() + expireTo * 60 * 1000,
     }
     const forgotPassword = new ForgotPassword(objectForgot)
     forgotPassword.save()
