@@ -199,12 +199,8 @@ module.exports.resetPassword = async (req, res) => {
 
 //[GET] /api/v1/users/detail
 module.exports.detail = async (req, res) => {
-    const token = req.cookies.token;
 
-    const userInfo = await User.findOne({
-        tokenUser: token,
-        deleted: false
-    }).select('-password -tokenUser')
+    const userInfo = req.user;
 
     res.json({
         code: 200,
