@@ -10,7 +10,7 @@ module.exports.index = async (req, res) => {
     const find = {
         deleted: false,
         $or: [
-            {taskParentID: req.user.id},
+            {createdBy: req.user.id},
             {listUser: req.user.id}
         ]
     }
@@ -24,7 +24,7 @@ module.exports.index = async (req, res) => {
     const countTask = await Task.countDocuments({ 
         deleted: false,
         $or: [
-            {taskParentID: req.user.id},
+            {createdBy: req.user.id},
             {listUser: req.user.id}
         ]
     })
@@ -149,7 +149,7 @@ module.exports.changeMulti = async (req, res) => {
 //[POST] /api/v1/tasks/create
 module.exports.create = async (req, res) => {
     try {
-        req.body.taskParentID = req.user.id
+        req.body.createdBy = req.user.id
         const task = new Task(req.body);
         task.save();
 
