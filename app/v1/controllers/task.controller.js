@@ -9,6 +9,10 @@ module.exports.index = async (req, res) => {
 
     const find = {
         deleted: false,
+        $or: [
+            {taskParentID: req.user.id},
+            {listUser: req.user.id}
+        ]
     }
 
     //pagination
@@ -17,7 +21,13 @@ module.exports.index = async (req, res) => {
         limitPage: req.query.limit || 2,
     }
 
-    const countTask = await Task.countDocuments({ deleted: false })
+    const countTask = await Task.countDocuments({ 
+        deleted: false,
+        $or: [
+            {taskParentID: req.user.id},
+            {listUser: req.user.id}
+        ]
+    })
 
     paginationHelper(
         req.query,
